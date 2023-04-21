@@ -1,0 +1,2 @@
+unset PYSPARK_DRIVER_PYTHON
+
