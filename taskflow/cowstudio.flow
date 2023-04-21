@@ -1,0 +1,51 @@
+nodes:
+  - name: SentinalStart
+    type: command
+    config:
+      command: echo "start all tasks"
+
+  - name: StartOds
+    type: command
+    config:
+      command: echo "ods tasks start"
+
+  - name: UserOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/user_ods.py
+    dependsOn:
+        - StartOds
+
+  - name: TagOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/tag_ods.py
+    dependsOn:
+        - StartOds
+
+
+  - name: ItemOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/item_ods.py
+    dependsOn:
+        - StartOds
+
+
+  - name: FinishOds
+    type: command
+    config:
+      command: echo "ods tasks finish"
+    dependsOn:
+        - UserOds
+	- TagOds
+	- ItemOds
+
+  - name: ItemTFIDF
+    type: command
+    config:
+      command: bash run.sh pyfiles/item_tfidf.py
+    dependsOn:
+        - FinishOds
+
+
