@@ -27,11 +27,31 @@ nodes:
     dependsOn:
         - StartOds
 
-
   - name: ItemOds
     type: command
     config:
       command: bash run.sh pyfiles/item_ods.py
+    dependsOn:
+        - StartOds
+
+  - name: ItemTagOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/item_tag_ods.py
+    dependsOn:
+        - StartOds
+
+  - name: UserTagOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/user_tag_ods.py
+    dependsOn:
+        - StartOds
+
+  - name: EventOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/event_ods.py
     dependsOn:
         - StartOds
 
@@ -43,6 +63,9 @@ nodes:
         - UserOds
         - TagOds
         - ItemOds
+        - ItemTagOds
+        - UserTagOds
+        - EventOdsd
 
 # starting tf-idf tasks
   - name: ItemTFIDF

@@ -1,9 +1,11 @@
 nodes:
+# starting all tasks 
   - name: SentinalStart
     type: command
     config:
       command: echo "start all tasks"
 
+# starting ods tasks node
   - name: StartOds
     type: command
     config:
@@ -25,7 +27,6 @@ nodes:
     dependsOn:
         - StartOds
 
-
   - name: ItemOds
     type: command
     config:
@@ -33,6 +34,26 @@ nodes:
     dependsOn:
         - StartOds
 
+  - name: ItemTagOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/item_tag_ods.py
+    dependsOn:
+        - StartOds
+
+  - name: UserTagOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/user_tag_ods.py
+    dependsOn:
+        - StartOds
+
+  - name: EventOds
+    type: command
+    config:
+      command: bash run.sh pyfiles/event_ods.py
+    dependsOn:
+        - StartOds
 
   - name: FinishOds
     type: command
@@ -42,7 +63,11 @@ nodes:
         - UserOds
         - TagOds
         - ItemOds
+        - ItemTagOds
+        - UserTagOds
+        - EventOdsd
 
+# starting tf-idf tasks
   - name: ItemTFIDF
     type: command
     config:
@@ -51,4 +76,5 @@ nodes:
         - FinishOds
 
 
+# starting ranking tasks
 
