@@ -67,11 +67,19 @@ nodes:
         - UserTagOds
         - EventOds
 
-  # starting tf-idf tasks
+  # starting item tf-idf tasks
   - name: ItemTFIDF
     type: command
     config:
       command: bash run.sh pyfiles/item_tfidf.py
+    dependsOn:
+        - FinishOds
+
+  # starting item score task
+  - name: ItemScore
+    type: command
+    config:
+      command: bash run.sh pyfiles/item_scores.py
     dependsOn:
         - FinishOds
 

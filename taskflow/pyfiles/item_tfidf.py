@@ -25,15 +25,7 @@ import os
 
 # set python env
 os.environ['PYSPARK_PYTHON'] = "/opt/conda3/envs/lab2/bin/python"
-spark = SparkSession.builder \
-    .appName("tiem_tfidf") \
-    .master("spark://node01:10077") \
-    .config("spark.driver.memory", "2g") \
-    .config("spark.executor.memory", "2g") \
-    .config("spark.cores.max", "3") \
-    .config("spark.sql.shuffle.partitions", "12") \
-    .config("spark.sql.autoBroadcastJoinThreshold", "-1") \
-    .getOrCreate()
+spark = SparkSession.builder     .appName("item_tfidf")     .master("spark://node01:10077")     .enableHiveSupport()    .config("spark.driver.memory", "2g")     .config("spark.executor.memory", "2g")     .config("spark.cores.max", "3")     .config("spark.sql.shuffle.partitions", "12")     .config("spark.sql.autoBroadcastJoinThreshold", "-1")     .getOrCreate()
 
 sc = spark.sparkContext
 
@@ -95,22 +87,27 @@ print(all_items.count())
 # In[6]:
 
 
-# cut item's name and description
-cut_items = all_items.map(cut_name_and_desc)
+all_items = spark.sql("select id,name,description from item_ods").rdd
 print(all_items.count())
 
 
 # In[7]:
 
 
-# do word count
-item_word_count = cut_items.flatMap(to_count)\
-                    .reduceByKey(lambda a,b:a+b)\
-                    .map(split_key_set_date)
-print(item_word_count.count())
+# cut item's name and description
+cut_items = all_items.map(cut_name_and_desc)
+print(all_items.count())
 
 
 # In[8]:
+
+
+# do word count
+item_word_count = cut_items.flatMap(to_count)                    .reduceByKey(lambda a,b:a+b)                    .map(split_key_set_date)
+print(item_word_count.count())
+
+
+# In[9]:
 
 
 # create a table for wordcount
@@ -126,20 +123,15 @@ item_word_count.createOrReplaceTempView("item_word_count")
 item_word_count.show()
 
 
-# In[ ]:
+# In[10]:
 
 
 # 将DataFrame写入MySQL
-item_word_count.write.format("jdbc") \
-    .option("url", "jdbc:mysql://cowstudio.wayne-lee.cn:3306/cowstudio") \
-    .option("driver", "com.mysql.cj.jdbc.Driver") \
-    .option("dbtable", "item_word_count") \
-    .option("user", "cowstudio") \
-    .option("password", "cowstudio_2119") \
-    .save(mode="overwrite")
+item_word_count.write.mode("overwrite").partitionBy("date").saveAsTable("item_word_count")
+spark.sql("show tables").show()
 
 
-# In[9]:
+# In[11]:
 
 
 # compute IDF
@@ -164,56 +156,89 @@ order by
 ''')
 item_word_idf.createOrReplaceTempView("item_word_idf")
 item_word_idf.show()
+item_word_idf.write.mode("overwrite").saveAsTable("item_word_idf")
+spark.sql("show tables").show()
 
 
-# In[10]:
+# In[12]:
 
 
 # compute TF
-item_word_tf = spark.sql('''
-with item_word_num as(
+item_word_tf = spark.sql(f'''
+with item_word_total_num as(
     select
         item_id,
-        sum(word_count) as word_total_count
+        sum(word_count) as word_total
     from
         item_word_count
     group by
         item_id
+), item_all as(
+    select
+        distinct id as item_id
+    from
+        item_ods
+), word_all as(
+    select
+        distinct key_word
+    from
+        item_word_count
+), item_word_all as(
+    select
+        item_id,
+        key_word
+    from
+        item_all,
+        word_all
 )
 select 
-    item_word_count.item_id,
-    item_word_count.key_word,
-    item_word_count.word_count / item_word_num.word_total_count as tf
+    a.item_id,
+    a.key_word,
+    if(b.item_id is null or c.word_count is null or b.item_id = 0, 0, c.word_count/b.word_total) as tf,
+    '{date_string}' as date
 from
-    item_word_count
-left join 
-    item_word_num on item_word_count.item_id = item_word_num.item_id
+    item_word_all a
+left join
+    item_word_total_num b on a.item_id = b.item_id
+left join
+    item_word_count c on a.item_id = c.item_id and a.key_word = c.key_word
+order by
+    tf desc
 ''')
-item_word_tf.createGlobalTempView("item_word_tf")
-item_word_tf.show()
+item_word_tf.createOrReplaceGlobalTempView("item_word_tf")
+item_word_tf.write.mode("overwrite").saveAsTable("item_word_tf")
+spark.sql("show tables").show()
 
 
-# In[11]:
+# In[13]:
 
 
 # compute tf-idf
-# item_word_tfidf = spark.sql('''
-# select 
-#     tf.item_id,
-#     tf.key_word,
-#     if(tf.tf is )
-# from
-#     item_word_idf as idf
-# left join
-#     item_word_tf as tf on idf.key_word = tf.key_word
-# ''')
+item_word_tfidf = spark.sql('''
+select 
+    tf.item_id,
+    tf.key_word,
+    tf.tf * idf.idf as tfidf,
+    tf.date
+from
+    item_word_tf as tf
+left join
+    item_word_idf as idf on idf.key_word = tf.key_word
+order by
+    tfidf desc
+''')
+item_word_tfidf.createOrReplaceGlobalTempView("item_word_tfidf")
+item_word_tfidf.show()
+item_word_tfidf.write.mode("overwrite").saveAsTable("item_word_tfidf")
+spark.sql("show tables").show()
 
 
-# In[5]:
+# In[14]:
 
 
 # close spark session
 spark.stop()
+mydb.close()
 
 
 # In[ ]:
