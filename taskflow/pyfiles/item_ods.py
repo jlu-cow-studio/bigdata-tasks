@@ -71,13 +71,13 @@ item_df = all_items.toDF(schema)
 # In[5]:
 
 
-spark.sql("drop table if exists item_ods").show()
+# spark.sql("drop table if exists item_ods").show()
 
 
 # In[6]:
 
 
-item_df.write.mode("overwrite").saveAsTable("item_ods")
+item_df.write.mode("overwrite").partitionBy("date").saveAsTable("item_ods")
 
 
 # In[7]:

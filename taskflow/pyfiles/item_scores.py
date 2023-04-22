@@ -130,13 +130,13 @@ item_score.show()
 # In[7]:
 
 
-spark.sql("drop table if exists item_score").show()
+# spark.sql("drop table if exists item_score").show()
 
 
 # In[8]:
 
 
-item_score.write.mode("overwrite").saveAsTable("item_score")
+item_score.write.mode("overwrite").partitionBy("date").saveAsTable("item_score")
 
 
 # In[9]:

@@ -5,6 +5,9 @@ nodes:
     config:
       command: echo "start all tasks"
 
+  # ##################################
+  # ods tasks
+  # ##################################
   # starting ods tasks node
   - name: StartOds
     type: command
@@ -67,6 +70,9 @@ nodes:
         - UserTagOds
         - EventOds
 
+  # #######################################
+  # word and text processing
+  # #######################################
   # starting item tf-idf tasks
   - name: ItemTFIDF
     type: command
@@ -75,6 +81,25 @@ nodes:
     dependsOn:
         - FinishOds
 
+  # starting item inverse index to redis
+  - name: ItemInverseIndex
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - ItemTFIDF
+        
+  # starting item hot word
+  - name: ItemHotWord
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - ItemTFIDF
+
+  # #######################################
+  # item hot and fresh list
+  # #######################################
   # starting item score task
   - name: ItemScore
     type: command
@@ -83,6 +108,134 @@ nodes:
     dependsOn:
         - FinishOds
 
+  # starting item order and list task
+  - name: ItemOrderList
+    type: command
+    config:
+      command: bash run.sh pyfiles/item_order_list.py
+    dependsOn:
+        - ItemScore
 
-  # starting ranking tasks
+  # ######################################
+  # Collaborative filtering user-item
+  # ######################################
+  - name: UserItemActionMatrix
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishOds
+  
+  # ############################################
+  # content based user-item
+  # ############################################
+  - name: StartUserItemContentBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - ItemTFIDF
+        - FinishOds
+        - UserItemActionMatrix
+  # ##################################
+  # content based item feature
+  # ##################################
+  # starting item order and list task
+  - name: StartItemContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserItemContentBased
+        
+  # starting item order and list task
+  - name: ItemContentBasedTextFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartItemContentBasedFeature
+
+  # starting item order and list task
+  - name: ItemContentBasedGeoFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartItemContentBasedFeature
+
+  # starting item order and list task
+  - name: ItemContentBasedTagFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartItemContentBasedFeature
+
+  # starting item order and list task
+  - name: FinishItemContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - ItemContentBasedGeoFeature
+        - ItemContentBasedTagFeature
+        - ItemContentBasedTextFeature
+        
+  # ##################################
+  # content based user feature
+  # ##################################
+  # starting item order and list task
+  - name: StartUserItemContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserItemContentBased
+        
+  # starting item order and list task
+  - name: UserItemContentBasedTextFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - ItemContentBasedTextFeature
+        - StartUserItemContentBasedFeature
+
+  # starting item order and list task
+  - name: UserItemContentBasedGeoFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserItemContentBasedFeature
+
+  # starting item order and list task
+  - name: UserItemContentBasedTagFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserItemContentBasedFeature
+
+  # starting item order and list task
+  - name: FinishUserItemContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserItemContentBasedGeoFeature
+        - UserItemContentBasedTagFeature
+        - UserItemContentBasedTextFeature
+
+  # 
+  - name: FinishUserItemContentBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishItemContentBasedFeature
+        - FinishUserItemContentBasedFeature
+
+
 

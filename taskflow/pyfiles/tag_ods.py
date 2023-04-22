@@ -81,13 +81,13 @@ tag_df = all_tags.toDF(schema)
 # In[7]:
 
 
-spark.sql("drop table if exists tag_ods").show()
+# spark.sql("drop table if exists tag_ods").show()
 
 
 # In[8]:
 
 
-tag_df.write.mode("overwrite").saveAsTable("tag_ods")
+tag_df.write.mode("overwrite").partitionBy("date").saveAsTable("tag_ods")
 
 
 # In[9]:

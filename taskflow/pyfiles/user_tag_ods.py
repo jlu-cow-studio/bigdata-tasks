@@ -75,13 +75,13 @@ df.show()
 # In[7]:
 
 
-spark.sql(f"drop table if exists {hive_table_name}").show()
+# spark.sql(f"drop table if exists {hive_table_name}").show()
 
 
 # In[8]:
 
 
-df.write.mode("overwrite").saveAsTable(hive_table_name)
+df.write.mode("overwrite").partitionBy("date").saveAsTable(hive_table_name)
 
 
 # In[9]:

@@ -64,13 +64,13 @@ event_df.show()
 # In[5]:
 
 
-spark.sql("drop table if exists event_ods").show()
+# spark.sql("drop table if exists event_ods").show()
 
 
 # In[6]:
 
 
-event_df.write.mode("overwrite").saveAsTable("event_ods")
+event_df.write.mode("overwrite").partitionBy("date").saveAsTable("event_ods")
 
 
 # In[7]:

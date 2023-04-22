@@ -63,13 +63,13 @@ user_df = all_users.toDF(schema)
 # In[5]:
 
 
-spark.sql("drop table if exists user_ods").show()
+# spark.sql("drop table if exists user_ods").show()
 
 
 # In[6]:
 
 
-user_df.write.mode("overwrite").saveAsTable("user_ods")
+user_df.write.mode("overwrite").partitionBy("date").saveAsTable("user_ods")
 
 
 # In[7]:

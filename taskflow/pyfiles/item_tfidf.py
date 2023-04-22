@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 # mysql connection
@@ -15,7 +15,7 @@ mydb = mysql.connector.connect(
 )
 
 
-# In[2]:
+# In[3]:
 
 
 # get spark session, 2g mem per executor
@@ -30,7 +30,7 @@ spark = SparkSession.builder     .appName("item_tfidf")     .master("spark://nod
 sc = spark.sparkContext
 
 
-# In[3]:
+# In[4]:
 
 
 # import jieba and set stop word set
@@ -41,7 +41,7 @@ stop_words_rdd = sc.textFile("hdfs:///user/spark_temp/stopwords.dat")
 stop_words_set = set(stop_words_rdd.collect())
 
 
-# In[4]:
+# In[5]:
 
 
 # define map functions 
@@ -73,7 +73,7 @@ def split_key_set_date(item):
     return id,key,count,date
 
 
-# In[5]:
+# In[6]:
 
 
 # get all item data from db, set result to an RDD
@@ -84,14 +84,14 @@ all_items = sc.parallelize(result)
 print(all_items.count())
 
 
-# In[6]:
+# In[7]:
 
 
 all_items = spark.sql("select id,name,description from item_ods").rdd
 print(all_items.count())
 
 
-# In[7]:
+# In[8]:
 
 
 # cut item's name and description
@@ -99,7 +99,7 @@ cut_items = all_items.map(cut_name_and_desc)
 print(all_items.count())
 
 
-# In[8]:
+# In[9]:
 
 
 # do word count
@@ -107,7 +107,7 @@ item_word_count = cut_items.flatMap(to_count)                    .reduceByKey(la
 print(item_word_count.count())
 
 
-# In[9]:
+# In[10]:
 
 
 # create a table for wordcount
@@ -123,15 +123,15 @@ item_word_count.createOrReplaceTempView("item_word_count")
 item_word_count.show()
 
 
-# In[10]:
+# In[11]:
 
 
-# 将DataFrame写入MySQL
+# 将DataFrame写入Hive
 item_word_count.write.mode("overwrite").partitionBy("date").saveAsTable("item_word_count")
 spark.sql("show tables").show()
 
 
-# In[11]:
+# In[12]:
 
 
 # compute IDF
@@ -156,11 +156,11 @@ order by
 ''')
 item_word_idf.createOrReplaceTempView("item_word_idf")
 item_word_idf.show()
-item_word_idf.write.mode("overwrite").saveAsTable("item_word_idf")
+item_word_idf.write.mode("overwrite").partitionBy("date").saveAsTable("item_word_idf")
 spark.sql("show tables").show()
 
 
-# In[12]:
+# In[13]:
 
 
 # compute TF
@@ -206,11 +206,11 @@ order by
     tf desc
 ''')
 item_word_tf.createOrReplaceGlobalTempView("item_word_tf")
-item_word_tf.write.mode("overwrite").saveAsTable("item_word_tf")
+item_word_tf.write.mode("overwrite").partitionBy("date").saveAsTable("item_word_tf")
 spark.sql("show tables").show()
 
 
-# In[13]:
+# In[14]:
 
 
 # compute tf-idf
@@ -233,7 +233,7 @@ item_word_tfidf.write.mode("overwrite").saveAsTable("item_word_tfidf")
 spark.sql("show tables").show()
 
 
-# In[14]:
+# In[15]:
 
 
 # close spark session
