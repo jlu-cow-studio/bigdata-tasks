@@ -1,11 +1,11 @@
 nodes:
-# starting all tasks 
+  # starting all tasks 
   - name: SentinalStart
     type: command
     config:
       command: echo "start all tasks"
 
-# starting ods tasks node
+  # starting ods tasks node
   - name: StartOds
     type: command
     config:
@@ -65,9 +65,9 @@ nodes:
         - ItemOds
         - ItemTagOds
         - UserTagOds
-        - EventOdsd
+        - EventOds
 
-# starting tf-idf tasks
+  # starting tf-idf tasks
   - name: ItemTFIDF
     type: command
     config:
@@ -76,5 +76,5 @@ nodes:
         - FinishOds
 
 
-# starting ranking tasks
+  # starting ranking tasks
 
