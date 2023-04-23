@@ -85,7 +85,7 @@ nodes:
   - name: ItemInverseIndex
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh pyfiles/item_inverse_index.py
     dependsOn:
         - ItemTFIDF
         
@@ -115,6 +115,14 @@ nodes:
       command: bash run.sh pyfiles/item_order_list.py
     dependsOn:
         - ItemScore
+
+  # starting item order and list task
+  - name: ItemListToRedis
+    type: command
+    config:
+      command: bash run.sh pyfiles/item_list_to_redis.py
+    dependsOn:
+        - ItemOrderList
 
   # ######################################
   # Collaborative filtering user-item
