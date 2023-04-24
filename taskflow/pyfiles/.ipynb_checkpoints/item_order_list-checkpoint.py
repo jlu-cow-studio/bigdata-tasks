@@ -25,7 +25,7 @@ import os
 
 # set python env
 os.environ['PYSPARK_PYTHON'] = "/opt/conda3/envs/lab2/bin/python"
-spark = SparkSession.builder     .appName("item_order_list")     .master("spark://node01:10077")     .enableHiveSupport()    .config("spark.driver.memory", "2g")     .config("spark.executor.memory", "2g")     .config("spark.cores.max", "3")     .config("spark.sql.shuffle.partitions", "12")     .config("spark.sql.autoBroadcastJoinThreshold", "-1")     .getOrCreate()
+spark = SparkSession.builder     .appName("item_order_list")     .master("spark://node01:10077")     .enableHiveSupport()    .config("spark.driver.memory", "2g")     .config("spark.executor.memory", "3g")     .config("spark.cores.max", "6")     .config("spark.sql.shuffle.partitions", "12")     .config("spark.sql.autoBroadcastJoinThreshold", "-1")     .getOrCreate()
 
 sc = spark.sparkContext
 
@@ -63,7 +63,8 @@ select
             category
         order by
             score desc
-    ) as rn
+    ) as rn,
+    '{today_string}' as date
 from
     item_all
 left join
@@ -120,19 +121,19 @@ item_hot_list.createOrReplaceTempView("item_hot_list")
 # In[10]:
 
 
-item_hot_list.write.mode("overwrite").partitionBy("date").s.partitionBy("date")aveAsTable("item_hot_list")
+item_order.write.mode("overwrite").partitionBy("date").saveAsTable("item_order")
 
 
 # In[10]:
 
 
-item_hot_list.write.mode("overwrite").partitionBy("date").s.partitionBy("date")aveAsTable("item_hot_list")
+item_hot_list.write.mode("overwrite").partitionBy("date").saveAsTable("item_hot_list")
 
 
 # In[10]:
 
 
-item_hot_list.write.mode("overwrite").partitionBy("date").s.partitionBy("date")aveAsTable("item_hot_list")
+item_fresh_list.write.mode("overwrite").partitionBy("date").saveAsTable("item_fresh_list")
 
 
 # In[11]:

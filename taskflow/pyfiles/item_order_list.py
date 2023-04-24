@@ -25,7 +25,7 @@ import os
 
 # set python env
 os.environ['PYSPARK_PYTHON'] = "/opt/conda3/envs/lab2/bin/python"
-spark = SparkSession.builder     .appName("item_order_list")     .master("spark://node01:10077")     .enableHiveSupport()    .config("spark.driver.memory", "2g")     .config("spark.executor.memory", "2g")     .config("spark.cores.max", "3")     .config("spark.sql.shuffle.partitions", "12")     .config("spark.sql.autoBroadcastJoinThreshold", "-1")     .getOrCreate()
+spark = SparkSession.builder     .appName("item_order_list")     .master("spark://node01:10077")     .enableHiveSupport()    .config("spark.driver.memory", "2g")     .config("spark.executor.memory", "3g")     .config("spark.cores.max", "6")     .config("spark.sql.shuffle.partitions", "12")     .config("spark.sql.autoBroadcastJoinThreshold", "-1")     .getOrCreate()
 
 sc = spark.sparkContext
 

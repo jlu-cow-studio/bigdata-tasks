@@ -44,7 +44,7 @@ today_string = datetime.today().strftime('%Y-%m-%d')
 print(today_string)
 
 
-# In[4]:
+# In[7]:
 
 
 item_hot_list = spark.sql(f'''
@@ -57,10 +57,10 @@ where
 ''').rdd
 
 print(item_hot_list.take(1))
-item_hot_list.map(send_hot_list).collect()
+l =item_hot_list.map(send_hot_list).collect()
 
 
-# In[5]:
+# In[8]:
 
 
 item_fresh_list = spark.sql(f'''
@@ -73,10 +73,10 @@ where
 ''').rdd
 
 print(item_fresh_list.take(1))
-item_fresh_list.map(send_fresh_list).collect().task(10)
+l = item_fresh_list.map(send_fresh_list).collect()
 
 
-# In[6]:
+# In[ ]:
 
 
 spark.stop()
