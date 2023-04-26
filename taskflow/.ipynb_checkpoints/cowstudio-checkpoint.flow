@@ -73,15 +73,23 @@ nodes:
   # #######################################
   # word and text processing
   # #######################################
-  # starting item tf-idf tasks
+  # 
+  - name: StartDataProcess
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishOds
+        
+  # 
   - name: ItemTFIDF
     type: command
     config:
       command: bash run.sh pyfiles/item_tfidf.py
     dependsOn:
-        - FinishOds
+        - StartDataProcess
 
-  # starting item inverse index to redis
+  # 
   - name: ItemInverseIndex
     type: command
     config:
@@ -89,66 +97,238 @@ nodes:
     dependsOn:
         - ItemTFIDF
         
-  # starting item hot word
+  # 
   - name: ItemHotWord
     type: command
     config:
       command: bash run.sh void
     dependsOn:
         - ItemTFIDF
+        
+        
+  # 
+  - name: TweetTFIDF
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartDataProcess
 
+  # 
+  - name: TweetInverseIndex
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - TweetTFIDF
+        
+  # 
+  - name: TweetHotWord
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - TweetTFIDF
+
+  # #######################################
+  # user score
+  # #######################################
+  #
+  - name: UserScore
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartDataProcess
+        
+  #     
+  - name: UserScoreToRedis
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserScore
+        
   # #######################################
   # item hot and fresh list
   # #######################################
-  # starting item score task
+  # 
   - name: ItemScore
     type: command
     config:
       command: bash run.sh pyfiles/item_scores.py
     dependsOn:
-        - FinishOds
+        - StartDataProcess
+        
+  # 
+  - name: TweetScore
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartDataProcess
 
-  # starting item order and list task
+  # ######################################
+  # user-item action matrix
+  # ######################################
+  #
+  - name: UserItemActionMatrix
+    type: command
+    config:
+      command: bash run.sh pyfiles/user_item_action_matrix.py
+    dependsOn:
+        - StartDataProcess
+  #
+  - name: UserTweetActionMatrix
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartDataProcess
+        
+  #     
+  - name: FinishDataProcess
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserScoreToRedis
+        - UserTweetActionMatrix
+        - TweetScore
+        - TweetInverseIndex
+        - TweetHotWord
+        - UserItemActionMatrix
+        - ItemScore
+        - ItemInverseIndex
+        - ItemHotWord
+        
+  # ######################################################
+  # list based recommendation
+  # ######################################################
+  
+  
+
+  # 
+  - name: StartRecommendationTasks
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishDataProcess
+  
+  
+
+  # 
+  - name: StartListBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartRecommendationTasks
+        
+  # 
+  - name: StartUserItemListBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartListBased
+
+  # 
   - name: ItemOrderList
     type: command
     config:
       command: bash run.sh pyfiles/item_order_list.py
     dependsOn:
-        - ItemScore
+        - StartUserItemListBased
 
-  # starting item order and list task
+  # 
   - name: ItemListToRedis
     type: command
     config:
       command: bash run.sh pyfiles/item_list_to_redis.py
     dependsOn:
         - ItemOrderList
-
-  # ######################################
-  # Collaborative filtering user-item
-  # ######################################
-  - name: UserItemActionMatrix
+        
+  # 
+  - name: FinishUserItemListBased
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - FinishOds
+        - ItemListToRedis
+        
+        
+  # 
+  - name: StartUserTweetListBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartListBased
+
+  # 
+  - name: TweetOrderList
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserTweetListBased
+
+  # 
+  - name: TweetListToRedis
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - TweetOrderList
+        
+  # 
+  - name: FinishUserTweetListBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - TweetListToRedis
+        
+        
+        
+  # 
+  - name: FinishListBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishUserItemListBased
+        - FinishUserTweetListBased
+  
+  
+  
+  # ######################################################
+  # content based recommendation
+  # ######################################################
+  #
+  - name: StartContentBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartRecommendationTasks
   
   # ############################################
   # content based user-item
   # ############################################
+  #
   - name: StartUserItemContentBased
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - ItemTFIDF
-        - FinishOds
-        - UserItemActionMatrix
+        - StartContentBased
   # ##################################
   # content based item feature
   # ##################################
-  # starting item order and list task
+  # 
   - name: StartItemContentBasedFeature
     type: command
     config:
@@ -156,7 +336,7 @@ nodes:
     dependsOn:
         - StartUserItemContentBased
         
-  # starting item order and list task
+  # 
   - name: ItemContentBasedTextFeature
     type: command
     config:
@@ -164,7 +344,7 @@ nodes:
     dependsOn:
         - StartItemContentBasedFeature
 
-  # starting item order and list task
+  # 
   - name: ItemContentBasedGeoFeature
     type: command
     config:
@@ -172,7 +352,7 @@ nodes:
     dependsOn:
         - StartItemContentBasedFeature
 
-  # starting item order and list task
+  # 
   - name: ItemContentBasedTagFeature
     type: command
     config:
@@ -180,7 +360,7 @@ nodes:
     dependsOn:
         - StartItemContentBasedFeature
 
-  # starting item order and list task
+  # 
   - name: FinishItemContentBasedFeature
     type: command
     config:
@@ -193,7 +373,7 @@ nodes:
   # ##################################
   # content based user feature
   # ##################################
-  # starting item order and list task
+  # 
   - name: StartUserItemContentBasedFeature
     type: command
     config:
@@ -201,7 +381,7 @@ nodes:
     dependsOn:
         - StartUserItemContentBased
         
-  # starting item order and list task
+  # 
   - name: UserItemContentBasedTextFeature
     type: command
     config:
@@ -210,7 +390,7 @@ nodes:
         - ItemContentBasedTextFeature
         - StartUserItemContentBasedFeature
 
-  # starting item order and list task
+  # 
   - name: UserItemContentBasedGeoFeature
     type: command
     config:
@@ -218,7 +398,7 @@ nodes:
     dependsOn:
         - StartUserItemContentBasedFeature
 
-  # starting item order and list task
+  # 
   - name: UserItemContentBasedTagFeature
     type: command
     config:
@@ -226,7 +406,7 @@ nodes:
     dependsOn:
         - StartUserItemContentBasedFeature
 
-  # starting item order and list task
+  # 
   - name: FinishUserItemContentBasedFeature
     type: command
     config:
@@ -237,13 +417,398 @@ nodes:
         - UserItemContentBasedTextFeature
 
   # 
+  - name: UserItemContentBasedSimMatrix
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishUserItemContentBasedFeature
+        - FinishItemContentBasedFeature
+
+  # 
+  - name: UserItemContentBasedRecList
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserItemContentBasedSimMatrix
+
+  # 
   - name: FinishUserItemContentBased
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - FinishItemContentBasedFeature
-        - FinishUserItemContentBasedFeature
+        - UserItemContentBasedRecList
 
 
 
+  # ############################################
+  # content based user-tweet
+  # ############################################
+  #
+  - name: StartUserTweetContentBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartContentBased
+  # ##################################
+  # content based tweet feature
+  # ##################################
+  # 
+  - name: StartTweetContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserTweetContentBased
+        
+  # 
+  - name: TweetContentBasedTextFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartTweetContentBasedFeature
+
+  # 
+  - name: TweetContentBasedGeoFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartTweetContentBasedFeature
+
+  # 
+  - name: TweetContentBasedTagFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartTweetContentBasedFeature
+
+  # 
+  - name: FinishTweetContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - TweetContentBasedGeoFeature
+        - TweetContentBasedTagFeature
+        - TweetContentBasedTextFeature
+        
+  # ##################################
+  # content based user feature
+  # ##################################
+  # 
+  - name: StartUserTweetContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserTweetContentBased
+        
+  # 
+  - name: UserTweetContentBasedTextFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - TweetContentBasedTextFeature
+        - StartUserTweetContentBasedFeature
+
+  # 
+  - name: UserTweetContentBasedGeoFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserTweetContentBasedFeature
+
+  # 
+  - name: UserTweetContentBasedTagFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserTweetContentBasedFeature
+
+  # 
+  - name: FinishUserTweetContentBasedFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserTweetContentBasedGeoFeature
+        - UserTweetContentBasedTagFeature
+        - UserTweetContentBasedTextFeature
+
+  # 
+  - name: UserTweetContentBasedSimMatrix
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishUserTweetContentBasedFeature
+        - FinishTweetContentBasedFeature
+
+  # 
+  - name: UserTweetContentBasedRecList
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserTweetContentBasedSimMatrix
+
+  # 
+  - name: FinishUserTweetContentBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserTweetContentBasedRecList
+
+
+
+
+  # 
+  - name: FinishContentBased
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishUserItemContentBased
+        - FinishUserTweetContentBased
+
+
+  # ######################################################
+  # collabrative filtering recommendation
+  # ######################################################
+  # 
+  - name: StartCF
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartRecommendationTasks
+  # 
+  - name: StartUserItemCF
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartCF
+  # 
+  - name: UserItemCFUserSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserItemCF
+  # 
+  - name: UserItemCFItemSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserItemCF
+        
+  # 
+  - name: UserItemCFUserItemSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserItemCFUserSim
+        - UserItemCFItemSim
+  # 
+  - name: UserItemCFRecList
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserItemCFUserItemSim
+        
+        
+  # 
+  - name: FinishUserItemCF
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserItemCFRecList
+        
+        
+        
+        
+        
+  # 
+  - name: StartUserTweetCF
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartCF
+        
+  # 
+  - name: UserTweetCFUserSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserTweetCF
+  # 
+  - name: UserTweetCFTweetSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartUserTweetCF
+        
+  # 
+  - name: UserTweetCFUserTweetSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserTweetCFUserSim
+        - UserTweetCFTweetSim
+  # 
+  - name: UserTweetCFRecList
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserTweetCFUserTweetSim
+  # 
+  - name: FinishUserTweetCF
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - UserTweetCFRecList
+
+  # 
+  - name: FinishCF
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishUserItemCF
+        - FinishUserTweetCF
+        
+        
+  # ########################################
+  # Recommendation Evaluation
+  # ########################################
+  
+
+  # 
+  - name: StartEvaluation
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartRecommendationTasks
+  
+
+  # 
+  - name: PrecisionAndRecall
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartEvaluation
+  
+
+  # 
+  - name: MeanAveragePrecision
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartEvaluation
+  
+
+  # 
+  - name: UserCoverage
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartEvaluation
+  
+
+  # 
+  - name: FinishEvaluation
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - PrecisionAndRecall
+        - MeanAveragePrecision
+        - UserCoverage
+  
+  
+
+  # 
+  - name: FinishRecommendationTasks
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishCF
+        - FinishListBased
+        - FinishContentBased
+        - FinishEvaluation
+        
+# #######################################################
+# Analizing tasks
+# #######################################################
+
+
+  # 
+  - name: StartAnalyzeTasks
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - FinishDataProcess
+
+
+  # 
+  - name: AnalyzeUser
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartAnalyzeTasks
+
+
+  # 
+  - name: AnalyzeItem
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartAnalyzeTasks
+
+
+  # 
+  - name: AnalyzeTweet
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartAnalyzeTasks
+
+  # 
+  - name: FinishAnalyzeTasks
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - AnalyzeUser
+        - AnalyzeItem
+        - AnalyzeTweet
