@@ -674,31 +674,12 @@ nodes:
   
 
   # 
-  - name: PrecisionAndRecall
+  - name: EvaluateRecommendation
     type: command
     config:
       command: bash run.sh void
     dependsOn:
         - StartEvaluation
-  
-
-  # 
-  - name: MeanAveragePrecision
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartEvaluation
-  
-
-  # 
-  - name: UserCoverage
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartEvaluation
-  
 
   # 
   - name: FinishEvaluation
@@ -706,9 +687,7 @@ nodes:
     config:
       command: bash run.sh void
     dependsOn:
-        - PrecisionAndRecall
-        - MeanAveragePrecision
-        - UserCoverage
+        - EvaluateRecommendation
   
   
 
