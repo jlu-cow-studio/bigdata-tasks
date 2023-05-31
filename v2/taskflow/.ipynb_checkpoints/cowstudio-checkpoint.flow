@@ -226,258 +226,61 @@ nodes:
   # content based user-item
   # ############################################
   #
-  - name: StartUserItemContentBased
+        
+  - name: CalculateGeoFeature
     type: command
     config:
       command: bash run.sh void
     dependsOn:
         - StartContentBased
-  # ##################################
-  # content based item feature
-  # ##################################
-  # 
-  - name: StartItemContentBasedFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserItemContentBased
-        
-  # 
-  - name: ItemContentBasedTextFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartItemContentBasedFeature
-
-  # 
-  - name: ItemContentBasedGeoFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartItemContentBasedFeature
-
-  # 
-  - name: ItemContentBasedTagFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartItemContentBasedFeature
-
-  # 
-  - name: FinishItemContentBasedFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - ItemContentBasedGeoFeature
-        - ItemContentBasedTagFeature
-        - ItemContentBasedTextFeature
-        
-  # ##################################
-  # content based user feature
-  # ##################################
-  # 
-  - name: StartUserItemContentBasedFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserItemContentBased
-        
-  # 
-  - name: UserItemContentBasedTextFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - ItemContentBasedTextFeature
-        - StartUserItemContentBasedFeature
-
-  # 
-  - name: UserItemContentBasedGeoFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserItemContentBasedFeature
-
-  # 
-  - name: UserItemContentBasedTagFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserItemContentBasedFeature
-
-  # 
-  - name: FinishUserItemContentBasedFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserItemContentBasedGeoFeature
-        - UserItemContentBasedTagFeature
-        - UserItemContentBasedTextFeature
-
-  # 
-  - name: UserItemContentBasedSimMatrix
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - FinishUserItemContentBasedFeature
-        - FinishItemContentBasedFeature
-
-  # 
-  - name: UserItemContentBasedRecList
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserItemContentBasedSimMatrix
-
-  # 
-  - name: FinishUserItemContentBased
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserItemContentBasedRecList
-
-
-
-  # ############################################
-  # content based user-tweet
-  # ############################################
-  #
-  - name: StartUserTweetContentBased
+   
+  - name: CalculateTagFeature
     type: command
     config:
       command: bash run.sh void
     dependsOn:
         - StartContentBased
-  # ##################################
-  # content based tweet feature
-  # ##################################
-  # 
-  - name: StartTweetContentBasedFeature
+   
+  - name: CalculateCattleProdTextFeature
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - StartUserTweetContentBased
+        - StartContentBased
+   
+  - name: CalculateVetTwitteTextFeature
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - StartContentBased
+  # 
+  - name: CalculateCattleProdUserItemSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - CalculateGeoFeature
+        - CalculateTagFeature
+        - CalculateCattleProdTextFeature
+  # 
+  - name: CalculateCattleProdUserItemSim
+    type: command
+    config:
+      command: bash run.sh void
+    dependsOn:
+        - CalculateGeoFeature
+        - CalculateTagFeature
+        - CalculateVetTwitteTextFeature
         
-  # 
-  - name: TweetContentBasedTextFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartTweetContentBasedFeature
-
-  # 
-  - name: TweetContentBasedGeoFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartTweetContentBasedFeature
-
-  # 
-  - name: TweetContentBasedTagFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartTweetContentBasedFeature
-
-  # 
-  - name: FinishTweetContentBasedFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - TweetContentBasedGeoFeature
-        - TweetContentBasedTagFeature
-        - TweetContentBasedTextFeature
         
-  # ##################################
-  # content based user feature
-  # ##################################
-  # 
-  - name: StartUserTweetContentBasedFeature
+  - name: ContentBasedRecToCache
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - StartUserTweetContentBased
-        
-  # 
-  - name: UserTweetContentBasedTextFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - TweetContentBasedTextFeature
-        - StartUserTweetContentBasedFeature
-
-  # 
-  - name: UserTweetContentBasedGeoFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserTweetContentBasedFeature
-
-  # 
-  - name: UserTweetContentBasedTagFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserTweetContentBasedFeature
-
-  # 
-  - name: FinishUserTweetContentBasedFeature
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserTweetContentBasedGeoFeature
-        - UserTweetContentBasedTagFeature
-        - UserTweetContentBasedTextFeature
-
-  # 
-  - name: UserTweetContentBasedSimMatrix
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - FinishUserTweetContentBasedFeature
-        - FinishTweetContentBasedFeature
-
-  # 
-  - name: UserTweetContentBasedRecList
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserTweetContentBasedSimMatrix
-
-  # 
-  - name: FinishUserTweetContentBased
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserTweetContentBasedRecList
-
-
-
+        - CalculateCattleProdUserItemSim
+        - CalculateCattleProdUserItemSim
 
   # 
   - name: FinishContentBased
@@ -485,8 +288,7 @@ nodes:
     config:
       command: bash run.sh void
     dependsOn:
-        - FinishUserItemContentBased
-        - FinishUserTweetContentBased
+        - ContentBasedRecToCache
 
 
   # ######################################################
