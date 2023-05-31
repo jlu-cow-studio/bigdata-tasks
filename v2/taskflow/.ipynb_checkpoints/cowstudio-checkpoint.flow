@@ -221,11 +221,6 @@ nodes:
       command: bash run.sh void
     dependsOn:
         - StartRecommendationTasks
-  
-  # ############################################
-  # content based user-item
-  # ############################################
-  #
         
   - name: CalculateGeoFeature
     type: command
@@ -264,7 +259,7 @@ nodes:
         - CalculateTagFeature
         - CalculateCattleProdTextFeature
   # 
-  - name: CalculateCattleProdUserItemSim
+  - name: CalculateVetTwitteUserItemSim
     type: command
     config:
       command: bash run.sh void
@@ -280,7 +275,7 @@ nodes:
       command: bash run.sh void
     dependsOn:
         - CalculateCattleProdUserItemSim
-        - CalculateCattleProdUserItemSim
+        - CalculateVetTwitteUserItemSim
 
   # 
   - name: FinishContentBased
@@ -295,108 +290,44 @@ nodes:
   # collabrative filtering recommendation
   # ######################################################
   # 
-  - name: StartCF
+  - name: StartCFBased
     type: command
     config:
       command: bash run.sh void
     dependsOn:
         - StartRecommendationTasks
   # 
-  - name: StartUserItemCF
+  - name: CattleProdActionMatrixFactorization
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - StartCF
+        - StartCFBased
   # 
-  - name: UserItemCFUserSim
+  - name: CattleProdGenerateCFRecommendation
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - StartUserItemCF
-  # 
-  - name: UserItemCFItemSim
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserItemCF
+        - CattleProdActionMatrixFactorization
+            
         
   # 
-  - name: UserItemCFUserItemSim
+  - name: VetTwitteActionMatrixFactorization
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - UserItemCFUserSim
-        - UserItemCFItemSim
-  # 
-  - name: UserItemCFRecList
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserItemCFUserItemSim
-        
+        - StartCFBased
         
   # 
-  - name: FinishUserItemCF
+  - name: VetTwitteGenerateCFRecommendation
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - UserItemCFRecList
-        
-        
-        
-        
-        
-  # 
-  - name: StartUserTweetCF
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartCF
-        
-  # 
-  - name: UserTweetCFUserSim
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserTweetCF
-  # 
-  - name: UserTweetCFTweetSim
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserTweetCF
-        
-  # 
-  - name: UserTweetCFUserTweetSim
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserTweetCFUserSim
-        - UserTweetCFTweetSim
-  # 
-  - name: UserTweetCFRecList
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserTweetCFUserTweetSim
-  # 
-  - name: FinishUserTweetCF
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - UserTweetCFRecList
+        - VetTwitteActionMatrixFactorization
+
 
   # 
   - name: FinishCF
@@ -404,8 +335,8 @@ nodes:
     config:
       command: bash run.sh void
     dependsOn:
-        - FinishUserItemCF
-        - FinishUserTweetCF
+        - CattleProdGenerateCFRecommendation
+        - VetTwitteGenerateCFRecommendation
         
         
   # ########################################
