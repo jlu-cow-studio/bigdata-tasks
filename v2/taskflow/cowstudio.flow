@@ -156,10 +156,8 @@ nodes:
     dependsOn:
         - CalculateUserScoreAndLevel
         - CalculateVetTwitteActionMatrix
-        #- TweetScore
         - CalculateCattleProdTFIDF
         - CalculateCattleProdActionMatrix
-        #- ItemScore
         - CalculateVetTwitteTFIDF
         
   # ######################################################
@@ -187,7 +185,7 @@ nodes:
         - StartRecommendationTasks
         
   # 
-  - name: StartUserItemListBased
+  - name: CalculateItemScoreRanking
     type: command
     config:
       command: bash run.sh void
@@ -195,62 +193,12 @@ nodes:
         - StartListBased
 
   # 
-  - name: ItemOrderList
-    type: command
-    config:
-      command: bash run.sh pyfiles/item_order_list.py
-    dependsOn:
-        - StartUserItemListBased
-
-  # 
-  - name: ItemListToRedis
-    type: command
-    config:
-      command: bash run.sh pyfiles/item_list_to_redis.py
-    dependsOn:
-        - ItemOrderList
-        
-  # 
-  - name: FinishUserItemListBased
+  - name: RankingTableToCache
     type: command
     config:
       command: bash run.sh void
     dependsOn:
-        - ItemListToRedis
-        
-        
-  # 
-  - name: StartUserTweetListBased
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartListBased
-
-  # 
-  - name: TweetOrderList
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - StartUserTweetListBased
-
-  # 
-  - name: TweetListToRedis
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - TweetOrderList
-        
-  # 
-  - name: FinishUserTweetListBased
-    type: command
-    config:
-      command: bash run.sh void
-    dependsOn:
-        - TweetListToRedis
-        
+        - CalculateItemScoreRanking
         
         
   # 
@@ -259,8 +207,7 @@ nodes:
     config:
       command: bash run.sh void
     dependsOn:
-        - FinishUserItemListBased
-        - FinishUserTweetListBased
+        - RankingTableToCache
   
   
   
