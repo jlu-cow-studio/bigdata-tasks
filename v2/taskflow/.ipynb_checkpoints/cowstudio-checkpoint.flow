@@ -19,49 +19,49 @@ nodes:
   - name: UserOds
     type: command
     config:
-      command: bash run.sh void 80
+      command: bash run.sh void 180
     dependsOn:
         - StartOds
 
   - name: TagOds
     type: command
     config:
-      command: bash run.sh void 75
+      command: bash run.sh void 175
     dependsOn:
         - StartOds
 
   - name: ItemOds
     type: command
     config:
-      command: bash run.sh void 90
+      command: bash run.sh void 190
     dependsOn:
         - StartOds
 
   - name: ItemTagOds
     type: command
     config:
-      command: bash run.sh void 68
+      command: bash run.sh void 168
     dependsOn:
         - StartOds
 
   - name: UserTagOds
     type: command
     config:
-      command: bash run.sh void 94
+      command: bash run.sh void 194
     dependsOn:
         - StartOds
 
   - name: UserActionOds
     type: command
     config:
-      command: bash run.sh void 70
+      command: bash run.sh void 170
     dependsOn:
         - StartOds
 
   - name: FeedRecordOds
     type: command
     config:
-      command: bash run.sh void 68
+      command: bash run.sh void 168
     dependsOn:
         - StartOds
 
@@ -93,7 +93,7 @@ nodes:
   - name: ProcessCattleProdText
     type: command
     config:
-      command: bash run.sh void 127
+      command: bash run.sh void 227
     dependsOn:
         - StartDataProcess
         
@@ -101,7 +101,7 @@ nodes:
   - name: CalculateCattleProdTFIDF
     type: command
     config:
-      command: bash run.sh void 86
+      command: bash run.sh void 186
     dependsOn:
         - ProcessCattleProdText
         
@@ -109,7 +109,7 @@ nodes:
   - name: ProcessVetTwitteText
     type: command
     config:
-      command: bash run.sh void 163
+      command: bash run.sh void 263
     dependsOn:
         - StartDataProcess
         
@@ -117,7 +117,7 @@ nodes:
   - name: CalculateVetTwitteTFIDF
     type: command
     config:
-      command: bash run.sh void 90
+      command: bash run.sh void 190
     dependsOn:
         - ProcessVetTwitteText
 
@@ -130,21 +130,21 @@ nodes:
   - name: CalculateUserScoreAndLevel
     type: command
     config:
-      command: bash run.sh void 78
+      command: bash run.sh void 178
     dependsOn:
         - StartDataProcess
 
   - name: CalculateCattleProdActionMatrix
     type: command
     config:
-      command: bash run.sh void 96
+      command: bash run.sh void 196
     dependsOn:
         - StartDataProcess
   #
   - name: CalculateVetTwitteActionMatrix
     type: command
     config:
-      command: bash run.sh void 127
+      command: bash run.sh void 227
     dependsOn:
         - StartDataProcess
         
@@ -188,7 +188,7 @@ nodes:
   - name: CalculateItemScoreRanking
     type: command
     config:
-      command: bash run.sh void 260
+      command: bash run.sh void 360
     dependsOn:
         - StartListBased
 
@@ -196,7 +196,7 @@ nodes:
   - name: RankingTableToCache
     type: command
     config:
-      command: bash run.sh void 136
+      command: bash run.sh void 236
     dependsOn:
         - CalculateItemScoreRanking
         
@@ -225,14 +225,14 @@ nodes:
   - name: CalculateGeoFeature
     type: command
     config:
-      command: bash run.sh void 96
+      command: bash run.sh void 196
     dependsOn:
         - StartContentBased
    
   - name: CalculateTagFeature
     type: command
     config:
-      command: bash run.sh void 179
+      command: bash run.sh void 279
     dependsOn:
         - StartContentBased
    
@@ -272,7 +272,7 @@ nodes:
   - name: ContentBasedRecToCache
     type: command
     config:
-      command: bash run.sh void 58
+      command: bash run.sh void 158
     dependsOn:
         - CalculateCattleProdUserItemSim
         - CalculateVetTwitteUserItemSim
@@ -307,7 +307,7 @@ nodes:
   - name: CattleProdGenerateCFRecommendation
     type: command
     config:
-      command: bash run.sh void 157
+      command: bash run.sh void 257
     dependsOn:
         - CattleProdActionMatrixFactorization
             
@@ -324,7 +324,7 @@ nodes:
   - name: VetTwitteGenerateCFRecommendation
     type: command
     config:
-      command: bash run.sh void 169
+      command: bash run.sh void 269
     dependsOn:
         - VetTwitteActionMatrixFactorization
 
@@ -357,7 +357,7 @@ nodes:
   - name: EvaluateRecommendation
     type: command
     config:
-      command: bash run.sh void 187
+      command: bash run.sh void 287
     dependsOn:
         - StartEvaluation
 
