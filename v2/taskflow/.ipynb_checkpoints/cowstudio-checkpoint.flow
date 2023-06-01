@@ -12,63 +12,63 @@ nodes:
   - name: StartOds
     type: command
     config:
-      command: echo "ods tasks start"
+      command: bash run.sh void 1
     dependsOn:
         - SentinalStart
 
   - name: UserOds
     type: command
     config:
-      command: bash run.sh pyfiles/user_ods.py
+      command: bash run.sh void 80
     dependsOn:
         - StartOds
 
   - name: TagOds
     type: command
     config:
-      command: bash run.sh pyfiles/tag_ods.py
+      command: bash run.sh void 75
     dependsOn:
         - StartOds
 
   - name: ItemOds
     type: command
     config:
-      command: bash run.sh pyfiles/item_ods.py
+      command: bash run.sh void 90
     dependsOn:
         - StartOds
 
   - name: ItemTagOds
     type: command
     config:
-      command: bash run.sh pyfiles/item_tag_ods.py
+      command: bash run.sh void 68
     dependsOn:
         - StartOds
 
   - name: UserTagOds
     type: command
     config:
-      command: bash run.sh pyfiles/user_tag_ods.py
+      command: bash run.sh void 94
     dependsOn:
         - StartOds
 
   - name: UserActionOds
     type: command
     config:
-      command: bash run.sh pyfiles/event_ods.py
+      command: bash run.sh void 70
     dependsOn:
         - StartOds
 
   - name: FeedRecordOds
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 68
     dependsOn:
         - StartOds
 
   - name: FinishOds
     type: command
     config:
-      command: echo "ods tasks finish"
+      command: bash run.sh void 6
     dependsOn:
         - UserOds
         - TagOds
@@ -85,7 +85,7 @@ nodes:
   - name: StartDataProcess
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 2
     dependsOn:
         - FinishOds
         
@@ -93,7 +93,7 @@ nodes:
   - name: ProcessCattleProdText
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 127
     dependsOn:
         - StartDataProcess
         
@@ -101,7 +101,7 @@ nodes:
   - name: CalculateCattleProdTFIDF
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 86
     dependsOn:
         - ProcessCattleProdText
         
@@ -109,7 +109,7 @@ nodes:
   - name: ProcessVetTwitteText
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 163
     dependsOn:
         - StartDataProcess
         
@@ -117,7 +117,7 @@ nodes:
   - name: CalculateVetTwitteTFIDF
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 90
     dependsOn:
         - ProcessVetTwitteText
 
@@ -130,21 +130,21 @@ nodes:
   - name: CalculateUserScoreAndLevel
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 78
     dependsOn:
         - StartDataProcess
 
   - name: CalculateCattleProdActionMatrix
     type: command
     config:
-      command: bash run.sh pyfiles/user_item_action_matrix.py
+      command: bash run.sh void 96
     dependsOn:
         - StartDataProcess
   #
   - name: CalculateVetTwitteActionMatrix
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 127
     dependsOn:
         - StartDataProcess
         
@@ -152,7 +152,7 @@ nodes:
   - name: FinishDataProcess
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 1
     dependsOn:
         - CalculateUserScoreAndLevel
         - CalculateVetTwitteActionMatrix
@@ -170,7 +170,7 @@ nodes:
   - name: StartRecommendationTasks
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 4
     dependsOn:
         - FinishDataProcess
   
@@ -180,7 +180,7 @@ nodes:
   - name: StartListBased
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 5
     dependsOn:
         - StartRecommendationTasks
         
@@ -188,7 +188,7 @@ nodes:
   - name: CalculateItemScoreRanking
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 260
     dependsOn:
         - StartListBased
 
@@ -196,7 +196,7 @@ nodes:
   - name: RankingTableToCache
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 136
     dependsOn:
         - CalculateItemScoreRanking
         
@@ -205,7 +205,7 @@ nodes:
   - name: FinishListBased
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 7
     dependsOn:
         - RankingTableToCache
   
@@ -218,42 +218,42 @@ nodes:
   - name: StartContentBased
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 5
     dependsOn:
         - StartRecommendationTasks
         
   - name: CalculateGeoFeature
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 96
     dependsOn:
         - StartContentBased
    
   - name: CalculateTagFeature
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 179
     dependsOn:
         - StartContentBased
    
   - name: CalculateCattleProdTextFeature
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 368
     dependsOn:
         - StartContentBased
    
   - name: CalculateVetTwitteTextFeature
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 407
     dependsOn:
         - StartContentBased
   # 
   - name: CalculateCattleProdUserItemSim
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 305
     dependsOn:
         - CalculateGeoFeature
         - CalculateTagFeature
@@ -262,7 +262,7 @@ nodes:
   - name: CalculateVetTwitteUserItemSim
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 298
     dependsOn:
         - CalculateGeoFeature
         - CalculateTagFeature
@@ -272,7 +272,7 @@ nodes:
   - name: ContentBasedRecToCache
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 58
     dependsOn:
         - CalculateCattleProdUserItemSim
         - CalculateVetTwitteUserItemSim
@@ -281,7 +281,7 @@ nodes:
   - name: FinishContentBased
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 3
     dependsOn:
         - ContentBasedRecToCache
 
@@ -293,21 +293,21 @@ nodes:
   - name: StartCFBased
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 5
     dependsOn:
         - StartRecommendationTasks
   # 
   - name: CattleProdActionMatrixFactorization
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 569
     dependsOn:
         - StartCFBased
   # 
   - name: CattleProdGenerateCFRecommendation
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 157
     dependsOn:
         - CattleProdActionMatrixFactorization
             
@@ -316,7 +316,7 @@ nodes:
   - name: VetTwitteActionMatrixFactorization
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 603
     dependsOn:
         - StartCFBased
         
@@ -324,7 +324,7 @@ nodes:
   - name: VetTwitteGenerateCFRecommendation
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 169
     dependsOn:
         - VetTwitteActionMatrixFactorization
 
@@ -333,7 +333,7 @@ nodes:
   - name: FinishCF
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 1
     dependsOn:
         - CattleProdGenerateCFRecommendation
         - VetTwitteGenerateCFRecommendation
@@ -348,7 +348,7 @@ nodes:
   - name: StartEvaluation
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 1
     dependsOn:
         - StartRecommendationTasks
   
@@ -357,7 +357,7 @@ nodes:
   - name: EvaluateRecommendation
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 187
     dependsOn:
         - StartEvaluation
 
@@ -365,7 +365,7 @@ nodes:
   - name: FinishEvaluation
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 3
     dependsOn:
         - EvaluateRecommendation
   
@@ -375,7 +375,7 @@ nodes:
   - name: FinishRecommendationTasks
     type: command
     config:
-      command: bash run.sh void
+      command: bash run.sh void 4
     dependsOn:
         - FinishCF
         - FinishListBased

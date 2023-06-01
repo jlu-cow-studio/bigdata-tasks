@@ -5,6 +5,7 @@ if [ -z $1 ]; then
 fi
 
 if [ $1 == "void" ]; then
+    sleep $2
     exit 0
 fi
 
